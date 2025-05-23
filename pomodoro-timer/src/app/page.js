@@ -27,7 +27,7 @@ import React, { useEffect, useState } from "react";
  * Pomodoro Timer Home Component
  * 
  * A React component that implements a Pomodoro timer with work and break modes.
- * The timer defaults to 25 minutes for work mode and 10 minutes for break mode.
+ * The timer defaults to 25 minutes for work mode and 5 minutes for break mode.
  * Users can start, pause, and reset the timer.
  * 
  * @component
@@ -106,7 +106,7 @@ export default function Home() {
       setMinutes(25);
       setSeconds(0);
     } else { // reseting break
-      setMinutes(10);
+      setMinutes(5);
       setSeconds(0);
     }
   }
