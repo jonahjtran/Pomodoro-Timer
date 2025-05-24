@@ -38,7 +38,7 @@ const THEMES = {
     backgroundColor: "#f3e5f5",
     timerColor: "#9c27b0",
     hoverColor: "#7b1fa2"
-  
+  }
 };
 
 /**
@@ -118,11 +118,19 @@ export default function Home() {
   const [long_time, setLongTime] = useState(10);
   const [short_time, setShortTime] = useState(5);
   const [work_time, setWorkTime] = useState(25);
+
   const [showSettings, setShowSettings] = useState(false);
+
   const [currentTheme, setCurrentTheme] = useState("default");
+
   const [backgroundColor, setBackgroundColor] = useState(THEMES.default.backgroundColor);
   const [timerColor, setTimerColor] = useState(THEMES.default.timerColor);
   const [hoverColor, setHoverColor] = useState(THEMES.default.hoverColor);
+
+  const [settings_break_count, setSettingsBreakCount] = useState(break_count);
+  const [settings_long_time, setSettingsLongTime] = useState(long_time);
+  const [settings_short_time, setSettingsShortTime] = useState(short_time);
+  const [settings_work_time, setSettingsWorkTime] = useState(work_time);
 
   useEffect(() => {
     let interval = null;
@@ -156,6 +164,16 @@ export default function Home() {
     return ()=> clearInterval(interval);
   }, [running, seconds, minutes, mode]);
 
+  // Update settings values when modal opens
+  useEffect(() => {
+    if (showSettings) {
+      setSettingsWorkTime(work_time);
+      setSettingsShortTime(short_time);
+      setSettingsLongTime(long_time);
+      setSettingsBreakCount(break_count);
+    }
+  }, [showSettings]);
+
   const toggleTimer = () => {
     setRunning(!running);
   }
@@ -174,6 +192,7 @@ export default function Home() {
   
   const displayTime = `${minutes}:${String(seconds).padStart(2, '0')}`;
 
+  // Handle mode change buttons
   const handleModeClick = (newMode) => {
     if (mode === newMode) {
       // If clicking on the current mode, just reset the timer
@@ -193,6 +212,7 @@ export default function Home() {
     }
   };
 
+  // handle background theme change in settings
   const handleThemeChange = (themeName) => {
     const theme = THEMES[themeName];
     setCurrentTheme(themeName);
@@ -201,44 +221,21 @@ export default function Home() {
     setHoverColor(theme.hoverColor);
   };
 
+  // handle time change in settings
   const handleTimeChange = (value, setter) => {
     // Remove any non-numeric characters
     const numericValue = value.replace(/[^0-9]/g, '');
-    
-    // Allow empty input
-    if (numericValue === '') {
-      setter('');
-      return;
-    }
-
-    // Convert to number and validate
-    const numValue = parseInt(numericValue, 10);
-    if (numValue < 5) {
-      setter(5);
-    } else if (numValue > 60) {
-      setter(60);
-    } else {
-      setter(numValue);
-    }
+    setter(numericValue);
   };
 
-  const handleSettingsSave = (newSettings) => {
-    // Only apply defaults if the values are empty strings
-    setWorkTime(newSettings.workTime === '' ? 25 : newSettings.workTime);
-    setShortTime(newSettings.shortTime === '' ? 5 : newSettings.shortTime);
-    setLongTime(newSettings.longTime === '' ? 10 : newSettings.longTime);
-    setBreakCount(newSettings.breakCount === '' ? 4 : newSettings.breakCount);
-    setShowSettings(false);
-    resetTimer();
-  };
-
+  // Main Display
   return (
     <div className={`min-h-screen w-full flex flex-col items-center justify-center space-y-6`} style={{ backgroundColor }}>
       <div className={`rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col`} style={{ backgroundColor: timerColor }}>
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-6">
             <span 
-              className={`cursor-pointer text-l font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
+              className={`cursor-pointer text-l font-bold transition-colors${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
               onClick={() => handleModeClick("work")}
             >
               Work
@@ -292,6 +289,7 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Settings Display */}
       {showSettings && (
         <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
           <div className="bg-[#1e1e1e] p-8 rounded-lg w-[480px] text-white shadow-2xl">
@@ -319,8 +317,8 @@ export default function Home() {
                       pattern="[0-9]*"
                       min="5"
                       max="60"
-                      value={work_time}
-                      onChange={(e) => handleTimeChange(e.target.value, setWorkTime)}
+                      value={settings_work_time}
+                      onChange={(e) => handleTimeChange(e.target.value, setSettingsWorkTime)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
@@ -332,8 +330,8 @@ export default function Home() {
                       pattern="[0-9]*"
                       min="1"
                       max="30"
-                      value={short_time}
-                      onChange={(e) => handleTimeChange(e.target.value, setShortTime)}
+                      value={settings_short_time}
+                      onChange={(e) => handleTimeChange(e.target.value, setSettingsShortTime)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
@@ -345,8 +343,8 @@ export default function Home() {
                       pattern="[0-9]*"
                       min="1"
                       max="60"
-                      value={long_time}
-                      onChange={(e) => handleTimeChange(e.target.value, setLongTime)}
+                      value={settings_long_time}
+                      onChange={(e) => handleTimeChange(e.target.value, setSettingsLongTime)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
@@ -358,8 +356,8 @@ export default function Home() {
                       pattern="[0-9]*"
                       min="1"
                       max="10"
-                      value={break_count}
-                      onChange={(e) => handleTimeChange(e.target.value, setBreakCount)}
+                      value={settings_break_count}
+                      onChange={(e) => handleTimeChange(e.target.value, setSettingsBreakCount)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
@@ -401,12 +399,35 @@ export default function Home() {
                 Cancel
               </button>
               <button
-                onClick={() => handleSettingsSave({
-                  workTime: work_time.toString(),
-                  shortTime: short_time.toString(),
-                  longTime: long_time.toString(),
-                  breakCount: break_count.toString()
-                })}
+                onClick={() => {
+                  // Apply settings to actual timer values with validation
+                  const newWorkTime = settings_work_time === '' ? 25 : 
+                    Math.min(60, Math.max(5, Number(settings_work_time)));
+                  const newShortTime = settings_short_time === '' ? 5 : 
+                    Math.min(30, Math.max(1, Number(settings_short_time)));
+                  const newLongTime = settings_long_time === '' ? 10 : 
+                    Math.min(60, Math.max(1, Number(settings_long_time)));
+                  const newBreakCount = settings_break_count === '' ? 4 : 
+                    Math.min(10, Math.max(1, Number(settings_break_count)));
+
+                  setWorkTime(newWorkTime);
+                  setShortTime(newShortTime);
+                  setLongTime(newLongTime);
+                  setBreakCount(newBreakCount);
+
+                  // Update current timer display based on current mode
+                  if (mode === "work") {
+                    setMinutes(newWorkTime);
+                  } else if (mode === "short break") {
+                    setMinutes(newShortTime);
+                  } else {
+                    setMinutes(newLongTime);
+                  }
+                  setSeconds(0);
+                  
+                  setShowSettings(false);
+                  setRunning(false);
+                }}
                 className="px-4 py-2 text-sm font-medium text-white bg-[#ffcd74] hover:bg-[#ffbc4d] rounded-md transition-colors"
               >
                 Save
