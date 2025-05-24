@@ -2,7 +2,44 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-
+const THEMES = {
+  default: {
+    name: "Default",
+    backgroundColor: "#ffedbf",
+    timerColor: "#ffcd74",
+    hoverColor: "#ffbc4d"
+  },
+  dark: {
+    name: "Dark",
+    backgroundColor: "#1e1e1e",
+    timerColor: "#2d2d2d",
+    hoverColor: "#3d3d3d"
+  },
+  ocean: {
+    name: "Ocean",
+    backgroundColor: "#e3f2fd",
+    timerColor: "#2196f3",
+    hoverColor: "#1976d2"
+  },
+  forest: {
+    name: "Forest",
+    backgroundColor: "#e8f5e9",
+    timerColor: "#4caf50",
+    hoverColor: "#388e3c"
+  },
+  sunset: {
+    name: "Sunset",
+    backgroundColor: "#fff3e0",
+    timerColor: "#ff9800",
+    hoverColor: "#f57c00"
+  },
+  lavender: {
+    name: "Lavender",
+    backgroundColor: "#f3e5f5",
+    timerColor: "#9c27b0",
+    hoverColor: "#7b1fa2"
+  }
+};
 
 /**
  * Home Component - A Pomodoro Timer application
@@ -81,6 +118,11 @@ export default function Home() {
   const [long_time, setLongTime] = useState(10);
   const [short_time, setShortTime] = useState(5);
   const [work_time, setWorkTime] = useState(25);
+  const [showSettings, setShowSettings] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState("default");
+  const [backgroundColor, setBackgroundColor] = useState(THEMES.default.backgroundColor);
+  const [timerColor, setTimerColor] = useState(THEMES.default.timerColor);
+  const [hoverColor, setHoverColor] = useState(THEMES.default.hoverColor);
 
   useEffect(() => {
     let interval = null;
@@ -151,28 +193,56 @@ export default function Home() {
     }
   };
 
+  const handleThemeChange = (themeName) => {
+    const theme = THEMES[themeName];
+    setCurrentTheme(themeName);
+    setBackgroundColor(theme.backgroundColor);
+    setTimerColor(theme.timerColor);
+    setHoverColor(theme.hoverColor);
+  };
+
+  const handleSettingsSave = (newSettings) => {
+    setWorkTime(newSettings.workTime);
+    setShortTime(newSettings.shortTime);
+    setLongTime(newSettings.longTime);
+    setBreakCount(newSettings.breakCount);
+    setShowSettings(false);
+    resetTimer();
+  };
+
   return (
-    <div className="bg-[#ffedbf] min-h-screen w-full flex flex-col items-center justify-center space-y-6">
-      <div className="bg-[#ffcd74] rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col">
-        <div className="flex justify-center space-x-6 mb-4">
-          <span 
-            className={`cursor-pointer text-l font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
-            onClick={() => handleModeClick("work")}
+    <div className={`min-h-screen w-full flex flex-col items-center justify-center space-y-6`} style={{ backgroundColor }}>
+      <div className={`rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col`} style={{ backgroundColor: timerColor }}>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex space-x-6">
+            <span 
+              className={`cursor-pointer text-l font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
+              onClick={() => handleModeClick("work")}
+            >
+              Work
+            </span>
+            <span 
+              className={`cursor-pointer text-l font-bold transition-colors ${mode === "short break" ? "text-white" : "text-white/70 hover:text-white"}`}
+              onClick={() => handleModeClick("short break")}
+            >
+              Short Break
+            </span>
+            <span 
+              className={`cursor-pointer text-l font-bold transition-colors ${mode === "long break" ? "text-white" : "text-white/70 hover:text-white"}`}
+              onClick={() => handleModeClick("long break")}
+            >
+              Long Break
+            </span>
+          </div>
+          <button 
+            onClick={() => setShowSettings(true)}
+            className="text-white hover:text-white/80 transition-colors"
           >
-            Work
-          </span>
-          <span 
-            className={`cursor-pointer text-l font-bold transition-colors ${mode === "short break" ? "text-white" : "text-white/70 hover:text-white"}`}
-            onClick={() => handleModeClick("short break")}
-          >
-            Short Break
-          </span>
-          <span 
-            className={`cursor-pointer text-l font-bold transition-colors ${mode === "long break" ? "text-white" : "text-white/70 hover:text-white"}`}
-            onClick={() => handleModeClick("long break")}
-          >
-            Long Break
-          </span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
         </div>
         <div className="flex-1 flex items-center justify-center">
           <h1 className="text-white font-bold text-7xl">{displayTime}</h1>
@@ -184,11 +254,137 @@ export default function Home() {
         </div>
       </div>
       <div className="flex space-x-4">
-        <button className="bg-[#ffcd74] hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold" onClick={resetTimer}>Reset</button>
-        <button className="bg-[#ffcd74] hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold" onClick={toggleTimer}>
+        <button 
+          className={`hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold`} 
+          style={{ backgroundColor: timerColor }}
+          onClick={resetTimer}
+        >
+          Reset
+        </button>
+        <button 
+          className={`hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold`} 
+          style={{ backgroundColor: timerColor }}
+          onClick={toggleTimer}
+        >
           {running ? "Pause" : "Start"}
         </button>
       </div>
+
+      {showSettings && (
+        <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <div className="bg-[#1e1e1e] p-8 rounded-lg w-[480px] text-white shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Settings</h2>
+              <button 
+                onClick={() => setShowSettings(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-300">Time (minutes)</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Work</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="60"
+                      value={work_time}
+                      onChange={(e) => setWorkTime(Number(e.target.value))}
+                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Short Break</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="30"
+                      value={short_time}
+                      onChange={(e) => setShortTime(Number(e.target.value))}
+                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Long Break</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="60"
+                      value={long_time}
+                      onChange={(e) => setLongTime(Number(e.target.value))}
+                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Work Sessions</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={break_count}
+                      onChange={(e) => setBreakCount(Number(e.target.value))}
+                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-300">Theme</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {Object.entries(THEMES).map(([key, theme]) => (
+                    <button
+                      key={key}
+                      onClick={() => handleThemeChange(key)}
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        currentTheme === key 
+                          ? 'border-white scale-105' 
+                          : 'border-transparent hover:border-gray-500'
+                      }`}
+                      style={{ backgroundColor: theme.backgroundColor }}
+                    >
+                      <div 
+                        className="w-full h-8 rounded"
+                        style={{ backgroundColor: theme.timerColor }}
+                      />
+                      <span className="block mt-2 text-sm font-medium text-gray-800">
+                        {theme.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowSettings(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-300 bg-[#2d2d2d] hover:bg-[#3d3d3d] rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSettingsSave({
+                  workTime: work_time,
+                  shortTime: short_time,
+                  longTime: long_time,
+                  breakCount: break_count
+                })}
+                className="px-4 py-2 text-sm font-medium text-white bg-[#ffcd74] hover:bg-[#ffbc4d] rounded-md transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
