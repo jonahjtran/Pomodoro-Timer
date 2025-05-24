@@ -4,7 +4,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
+  basePath: '/Pomodoro-Timer',
+  assetPrefix: '/Pomodoro-Timer/',
 }
 
 module.exports = nextConfig 
