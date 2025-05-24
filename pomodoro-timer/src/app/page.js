@@ -38,7 +38,7 @@ const THEMES = {
     backgroundColor: "#f3e5f5",
     timerColor: "#9c27b0",
     hoverColor: "#7b1fa2"
-  }
+  
 };
 
 /**
@@ -201,11 +201,33 @@ export default function Home() {
     setHoverColor(theme.hoverColor);
   };
 
+  const handleTimeChange = (value, setter) => {
+    // Remove any non-numeric characters
+    const numericValue = value.replace(/[^0-9]/g, '');
+    
+    // Allow empty input
+    if (numericValue === '') {
+      setter('');
+      return;
+    }
+
+    // Convert to number and validate
+    const numValue = parseInt(numericValue, 10);
+    if (numValue < 5) {
+      setter(5);
+    } else if (numValue > 60) {
+      setter(60);
+    } else {
+      setter(numValue);
+    }
+  };
+
   const handleSettingsSave = (newSettings) => {
-    setWorkTime(newSettings.workTime);
-    setShortTime(newSettings.shortTime);
-    setLongTime(newSettings.longTime);
-    setBreakCount(newSettings.breakCount);
+    // Only apply defaults if the values are empty strings
+    setWorkTime(newSettings.workTime === '' ? 25 : newSettings.workTime);
+    setShortTime(newSettings.shortTime === '' ? 5 : newSettings.shortTime);
+    setLongTime(newSettings.longTime === '' ? 10 : newSettings.longTime);
+    setBreakCount(newSettings.breakCount === '' ? 4 : newSettings.breakCount);
     setShowSettings(false);
     resetTimer();
   };
@@ -292,44 +314,52 @@ export default function Home() {
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Work</label>
                     <input
-                      type="number"
-                      min="1"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      min="5"
                       max="60"
                       value={work_time}
-                      onChange={(e) => setWorkTime(Number(e.target.value))}
+                      onChange={(e) => handleTimeChange(e.target.value, setWorkTime)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Short Break</label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       min="1"
                       max="30"
                       value={short_time}
-                      onChange={(e) => setShortTime(Number(e.target.value))}
+                      onChange={(e) => handleTimeChange(e.target.value, setShortTime)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Long Break</label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       min="1"
                       max="60"
                       value={long_time}
-                      onChange={(e) => setLongTime(Number(e.target.value))}
+                      onChange={(e) => handleTimeChange(e.target.value, setLongTime)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Work Sessions</label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       min="1"
                       max="10"
                       value={break_count}
-                      onChange={(e) => setBreakCount(Number(e.target.value))}
+                      onChange={(e) => handleTimeChange(e.target.value, setBreakCount)}
                       className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
@@ -372,10 +402,10 @@ export default function Home() {
               </button>
               <button
                 onClick={() => handleSettingsSave({
-                  workTime: work_time,
-                  shortTime: short_time,
-                  longTime: long_time,
-                  breakCount: break_count
+                  workTime: work_time.toString(),
+                  shortTime: short_time.toString(),
+                  longTime: long_time.toString(),
+                  breakCount: break_count.toString()
                 })}
                 className="px-4 py-2 text-sm font-medium text-white bg-[#ffcd74] hover:bg-[#ffbc4d] rounded-md transition-colors"
               >
