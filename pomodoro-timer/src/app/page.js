@@ -41,6 +41,44 @@ const THEMES = {
   }
 };
 
+const BACKGROUNDS = {
+  altgeld: {
+    name: "Altgeld Hall",
+    type: "image",
+    value: "https://las.illinois.edu/sites/default/files/2021-11/4479_BAILEY%20EDWARD_Altgeld_Library%20II_E_Exterior_210629.jpg"
+  },
+  quad: {
+    name: "Main Quad",
+    type: "image",
+    value: "https://fightingillini.com/images/2015/11/10/illinois_campus_quad.jpg"
+  },
+  library: {
+    name: "Main Library",
+    type: "image",
+    value: "https://live.staticflickr.com/1167/537413237_13cf0e1b9d_b.jpg"
+  },
+  krannert: {
+    name: "Krannert Center",
+    type: "image",
+    value: "https://web.faa.illinois.edu/app/uploads/sites/6/2021/06/145714-500x0-c-default.jpg"
+  },
+  union: {
+    name: "Illini Union",
+    type: "image",
+    value: "https://newstudent.illinois.edu/sites/default/files/paragraphs/feature-grouped/illini%20union.jpg"
+  },
+  memorial_stadium: {
+    name: "Memorial Stadium",
+    type: "image",
+    value: "https://fightingillini.com/images/2020/8/22/ATH1920_Facilities_MemorialStadium_01.jpg"
+  },
+  state_farm: {
+    name: "State Farm Center",
+    type: "image",
+    value: "https://fightingillini.com/images/2020/8/22/ATH1920_Facilities_0007s_0001_statefarmcenter.jpg"
+  },
+};
+
 /**
  * Home Component - A Pomodoro Timer application
  * 
@@ -122,6 +160,8 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
 
   const [currentTheme, setCurrentTheme] = useState("default");
+  const [currentBackground, setCurrentBackground] = useState("altgeld");
+  const [settingsBackground, setSettingsBackground] = useState("altgeld");
 
   const [backgroundColor, setBackgroundColor] = useState(THEMES.default.backgroundColor);
   const [timerColor, setTimerColor] = useState(THEMES.default.timerColor);
@@ -171,6 +211,7 @@ export default function Home() {
       setSettingsShortTime(short_time);
       setSettingsLongTime(long_time);
       setSettingsBreakCount(break_count);
+      setSettingsBackground(currentBackground);
     }
   }, [showSettings]);
 
@@ -219,6 +260,7 @@ export default function Home() {
     setBackgroundColor(theme.backgroundColor);
     setTimerColor(theme.timerColor);
     setHoverColor(theme.hoverColor);
+    setSettingsBackground(themeName); // Update background selection when theme changes
   };
 
   // handle time change in settings
@@ -228,14 +270,34 @@ export default function Home() {
     setter(numericValue);
   };
 
+  const handleBackgroundChange = (bgKey) => {
+    setSettingsBackground(bgKey);
+  };
+
   // Main Display
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center justify-center space-y-6`} style={{ backgroundColor }}>
-      <div className={`rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col`} style={{ backgroundColor: timerColor }}>
+    <div 
+      className={`min-h-screen w-full flex flex-col items-center justify-center space-y-6 transition-all duration-500`} 
+      style={{ 
+        backgroundColor: THEMES[currentBackground] ? THEMES[currentBackground].backgroundColor : "transparent",
+        backgroundImage: BACKGROUNDS[currentBackground]?.type === "image" ? `url(${BACKGROUNDS[currentBackground].value})` : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat"
+      }}
+    >
+      <div 
+        className={`rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col backdrop-blur-sm`} 
+        style={{ 
+          backgroundColor: THEMES[currentBackground] 
+            ? THEMES[currentBackground].timerColor 
+            : 'rgba(0, 0, 0, 0.5)'
+        }}
+      >
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-6">
             <span 
-              className={`cursor-pointer text-l font-bold transition-colors${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
+              className={`cursor-pointer text-l font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
               onClick={() => handleModeClick("work")}
             >
               Work
@@ -275,14 +337,22 @@ export default function Home() {
       <div className="flex space-x-4">
         <button 
           className={`hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold`} 
-          style={{ backgroundColor: timerColor }}
+          style={{ 
+            backgroundColor: THEMES[currentBackground] 
+              ? THEMES[currentBackground].timerColor 
+              : 'rgba(0, 0, 0, 0.5)'
+          }}
           onClick={resetTimer}
         >
           Reset
         </button>
         <button 
           className={`hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold`} 
-          style={{ backgroundColor: timerColor }}
+          style={{ 
+            backgroundColor: THEMES[currentBackground] 
+              ? THEMES[currentBackground].timerColor 
+              : 'rgba(0, 0, 0, 0.5)'
+          }}
           onClick={toggleTimer}
         >
           {running ? "Pause" : "Start"}
@@ -292,8 +362,8 @@ export default function Home() {
       {/* Settings Display */}
       {showSettings && (
         <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-          <div className="bg-[#1e1e1e] p-8 rounded-lg w-[480px] text-white shadow-2xl">
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-[#1e1e1e] rounded-lg w-[480px] text-white shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-8 pb-4">
               <h2 className="text-2xl font-bold">Settings</h2>
               <button 
                 onClick={() => setShowSettings(false)}
@@ -305,133 +375,170 @@ export default function Home() {
               </button>
             </div>
             
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-300">Time (minutes)</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Work</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      min="5"
-                      max="60"
-                      value={settings_work_time}
-                      onChange={(e) => handleTimeChange(e.target.value, setSettingsWorkTime)}
-                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Short Break</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      min="1"
-                      max="30"
-                      value={settings_short_time}
-                      onChange={(e) => handleTimeChange(e.target.value, setSettingsShortTime)}
-                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Long Break</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      min="1"
-                      max="60"
-                      value={settings_long_time}
-                      onChange={(e) => handleTimeChange(e.target.value, setSettingsLongTime)}
-                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Work Sessions</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      min="1"
-                      max="10"
-                      value={settings_break_count}
-                      onChange={(e) => handleTimeChange(e.target.value, setSettingsBreakCount)}
-                      className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-300">Theme</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  {Object.entries(THEMES).map(([key, theme]) => (
-                    <button
-                      key={key}
-                      onClick={() => handleThemeChange(key)}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        currentTheme === key 
-                          ? 'border-white scale-105' 
-                          : 'border-transparent hover:border-gray-500'
-                      }`}
-                      style={{ backgroundColor: theme.backgroundColor }}
-                    >
-                      <div 
-                        className="w-full h-8 rounded"
-                        style={{ backgroundColor: theme.timerColor }}
+            <div className="overflow-y-auto px-8 pb-8">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-300">Time (minutes)</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Work</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        min="5"
+                        max="60"
+                        value={settings_work_time}
+                        onChange={(e) => handleTimeChange(e.target.value, setSettingsWorkTime)}
+                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <span className="block mt-2 text-sm font-medium text-gray-800">
-                        {theme.name}
-                      </span>
-                    </button>
-                  ))}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Short Break</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        min="1"
+                        max="30"
+                        value={settings_short_time}
+                        onChange={(e) => handleTimeChange(e.target.value, setSettingsShortTime)}
+                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Long Break</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        min="1"
+                        max="60"
+                        value={settings_long_time}
+                        onChange={(e) => handleTimeChange(e.target.value, setSettingsLongTime)}
+                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Work Sessions</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        min="1"
+                        max="10"
+                        value={settings_break_count}
+                        onChange={(e) => handleTimeChange(e.target.value, setSettingsBreakCount)}
+                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-300">Background</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {Object.entries(THEMES).map(([key, theme]) => (
+                      <button
+                        key={key}
+                        onClick={() => handleBackgroundChange(key)}
+                        className={`p-3 rounded-lg border-2 transition-all ${
+                          settingsBackground === key 
+                            ? 'border-white scale-105' 
+                            : 'border-transparent hover:border-gray-500'
+                        }`}
+                        style={{ 
+                          backgroundColor: theme.backgroundColor,
+                          height: "100px"
+                        }}
+                      >
+                        <div 
+                          className="w-full h-8 rounded"
+                          style={{ backgroundColor: theme.timerColor }}
+                        />
+                        <span className="block mt-2 text-sm font-medium text-gray-800">
+                          {theme.name}
+                        </span>
+                      </button>
+                    ))}
+                    {Object.entries(BACKGROUNDS).map(([key, bg]) => (
+                      <button
+                        key={key}
+                        onClick={() => handleBackgroundChange(key)}
+                        className={`p-3 rounded-lg border-2 transition-all ${
+                          settingsBackground === key 
+                            ? 'border-white scale-105' 
+                            : 'border-transparent hover:border-gray-500'
+                        }`}
+                        style={{ 
+                          backgroundColor: "transparent",
+                          backgroundImage: `url(${bg.value})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          height: "100px"
+                        }}
+                      >
+                        <span className="block mt-2 text-sm font-medium text-white bg-black/50 px-2 py-1 rounded">
+                          {bg.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-8 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowSettings(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-300 bg-[#2d2d2d] hover:bg-[#3d3d3d] rounded-md transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  // Apply settings to actual timer values with validation
-                  const newWorkTime = settings_work_time === '' ? 25 : 
-                    Math.min(60, Math.max(5, Number(settings_work_time)));
-                  const newShortTime = settings_short_time === '' ? 5 : 
-                    Math.min(30, Math.max(1, Number(settings_short_time)));
-                  const newLongTime = settings_long_time === '' ? 10 : 
-                    Math.min(60, Math.max(1, Number(settings_long_time)));
-                  const newBreakCount = settings_break_count === '' ? 4 : 
-                    Math.min(10, Math.max(1, Number(settings_break_count)));
+              <div className="mt-8 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-300 bg-[#2d2d2d] hover:bg-[#3d3d3d] rounded-md transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // Apply settings to actual timer values with validation
+                    const newWorkTime = settings_work_time === '' ? 25 : 
+                      Math.min(60, Math.max(5, Number(settings_work_time)));
+                    const newShortTime = settings_short_time === '' ? 5 : 
+                      Math.min(30, Math.max(1, Number(settings_short_time)));
+                    const newLongTime = settings_long_time === '' ? 10 : 
+                      Math.min(60, Math.max(1, Number(settings_long_time)));
+                    const newBreakCount = settings_break_count === '' ? 4 : 
+                      Math.min(10, Math.max(1, Number(settings_break_count)));
 
-                  setWorkTime(newWorkTime);
-                  setShortTime(newShortTime);
-                  setLongTime(newLongTime);
-                  setBreakCount(newBreakCount);
+                    setWorkTime(newWorkTime);
+                    setShortTime(newShortTime);
+                    setLongTime(newLongTime);
+                    setBreakCount(newBreakCount);
+                    
+                    // Update background and theme colors when saving
+                    setCurrentBackground(settingsBackground);
+                    if (THEMES[settingsBackground]) {
+                      const theme = THEMES[settingsBackground];
+                      setBackgroundColor(theme.backgroundColor);
+                      setTimerColor(theme.timerColor);
+                      setHoverColor(theme.hoverColor);
+                      setCurrentTheme(settingsBackground);
+                    }
 
-                  // Update current timer display based on current mode
-                  if (mode === "work") {
-                    setMinutes(newWorkTime);
-                  } else if (mode === "short break") {
-                    setMinutes(newShortTime);
-                  } else {
-                    setMinutes(newLongTime);
-                  }
-                  setSeconds(0);
-                  
-                  setShowSettings(false);
-                  setRunning(false);
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-[#ffcd74] hover:bg-[#ffbc4d] rounded-md transition-colors"
-              >
-                Save
-              </button>
+                    // Update current timer display based on current mode
+                    if (mode === "work") {
+                      setMinutes(newWorkTime);
+                    } else if (mode === "short break") {
+                      setMinutes(newShortTime);
+                    } else {
+                      setMinutes(newLongTime);
+                    }
+                    setSeconds(0);
+                    
+                    setShowSettings(false);
+                    setRunning(false);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#ffcd74] hover:bg-[#ffbc4d] rounded-md transition-colors"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
