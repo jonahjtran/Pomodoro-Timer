@@ -17,7 +17,10 @@ import React, { useEffect, useState } from "react";
  * @property {number} minutes - Current minutes remaining on the timer
  * @property {number} seconds - Current seconds remaining on the timer
  * @property {boolean} running - Whether the timer is currently running
- * @property {string} mode - Current timer mode ("work" or "break")
+ * @property {string} mode - Current timer mode ("work," "short break," or "long break")
+ * @property {number} break_count - number of short breaks before a long break
+ * @property {number} long_time - duration of a long break
+ * @property {number} short_time - duration of a short break
  * 
  * Functions:
  * @function toggleTimer - Toggles the timer between running and paused states
@@ -55,17 +58,34 @@ import React, { useEffect, useState } from "react";
  * 
  * @returns {JSX.Element} The rendered Pomodoro Timer component
  */
+/**
+ * Home component implementing a Pomodoro Timer
+ * 
+ * This component provides a timer for the Pomodoro Technique with three modes:
+ * - Work: Default 25-minute focus period
+ * - Short break: Default 5-minute rest period
+ * - Long break: Default 10-minute extended rest period that occurs after a set number of work sessions
+ * 
+ * The timer automatically cycles between work and break sessions, with a longer break
+ * occurring after a configurable number of work periods.
+ * 
+ * @returns {JSX.Element} The rendered Pomodoro Timer interface with mode selection and timer controls
+ */
 export default function Home() {
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const [mode, setMode] = useState("work");
+  const [count, setCount] = useState(0);
+  const [break_count, setBreakCount] = useState(4);
+  const [long_time, setLongTime] = useState(10);
+  const [short_time, setShortTime] = useState(5);
+  const [work_time, setWorkTime] = useState(25);
 
   useEffect(() => {
     let interval = null;
     if (running) { // start coutdown
       interval = setInterval(() => { // keeps running function to ensure timing consistency
-        if (mode === "work") { // work mode
           if (seconds > 0) { // regular second decrement
             setSeconds(seconds - 1);
           } else if (minutes > 0) { // end of a minute
@@ -73,22 +93,20 @@ export default function Home() {
             setSeconds(59);
           } else { // timer over
             setRunning(false);
-            setMinutes(25);
             setSeconds(0);
+            if (mode == "work") { // just finished work, move to break
+              setCount(count + 1);
+              if (count % break_count == 0) {
+                setCount(0);
+                setMode("long break");
+              } else {
+                setMode("short break");
+            }
+            } else { // finished a break, now go to work
+              setMode("work");
+              setMinutes(work_time);
+            }
           }
-        } else if (mode === "break") { // break mode
-          if (seconds > 0) { // regular second decrement
-            setSeconds(seconds - 1);
-          } else if (minutes > 0) { // end of a minute
-            setMinutes(minutes - 1);
-            setSeconds(59);
-          } else { // timer over
-            clearInterval(interval);
-            setRunning(false);
-            setMinutes(5);
-            setSeconds(0);
-          }
-        }
       }, 1000);
     } else if (!running && seconds != 0 || minutes != 0) {
       clearInterval(interval);
@@ -102,12 +120,13 @@ export default function Home() {
 
   const resetTimer = () => {
     setRunning(false);
+    setSeconds(0);
     if (mode == "work") { // resetting work
-      setMinutes(25);
-      setSeconds(0);
-    } else { // reseting break
-      setMinutes(5);
-      setSeconds(0);
+      setMinutes(work_time);
+    } else if (mode == "short break"){ // reseting short break
+      setMinutes(short_time);
+    } else { // resetting long break
+      setMinutes(long_time);
     }
   }
   
@@ -121,12 +140,13 @@ export default function Home() {
       // If clicking on a different mode, change mode and reset timer
       setMode(newMode); 
       setRunning(false);
+      setSeconds(0);
       if (newMode === "work") {
-        setMinutes(25);
-        setSeconds(0);
-      } else {
-        setMinutes(5);
-        setSeconds(0);
+        setMinutes(work_time);
+      } else if (newMode == "short break") {
+        setMinutes(short_time);
+      } else { // switched to long break
+        setMinutes(long_time);
       }
     }
   };
@@ -136,16 +156,22 @@ export default function Home() {
       <div className="bg-[#ffcd74] rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col">
         <div className="flex justify-center space-x-6 mb-4">
           <span 
-            className={`cursor-pointer text-xl font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
+            className={`cursor-pointer text-l font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
             onClick={() => handleModeClick("work")}
           >
             Work
           </span>
           <span 
-            className={`cursor-pointer text-xl font-bold transition-colors ${mode === "break" ? "text-white" : "text-white/70 hover:text-white"}`}
-            onClick={() => handleModeClick("break")}
+            className={`cursor-pointer text-l font-bold transition-colors ${mode === "short break" ? "text-white" : "text-white/70 hover:text-white"}`}
+            onClick={() => handleModeClick("short break")}
           >
-            Break
+            Short Break
+          </span>
+          <span 
+            className={`cursor-pointer text-l font-bold transition-colors ${mode === "long break" ? "text-white" : "text-white/70 hover:text-white"}`}
+            onClick={() => handleModeClick("long break")}
+          >
+            Long Break
           </span>
         </div>
         <div className="flex-1 flex items-center justify-center">
@@ -153,7 +179,7 @@ export default function Home() {
         </div>
         <div className="mb-2">
           <h1 className="text-white font-bold text-2xl">
-            {mode === "break" ? "Time to relax!" : "Time to work!"}
+            {mode === "short break" || mode === "long break" ? "Time to relax!" : "Time to work!"}
           </h1>
         </div>
       </div>
