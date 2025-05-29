@@ -277,39 +277,41 @@ export default function Home() {
   // Main Display
   return (
     <div 
-      className={`min-h-screen w-full flex flex-col items-center justify-center space-y-6 transition-all duration-500`} 
+      className="absolute inset-0 flex items-center justify-center transition-all duration-500" 
       style={{ 
         backgroundColor: THEMES[currentBackground] ? THEMES[currentBackground].backgroundColor : "transparent",
         backgroundImage: BACKGROUNDS[currentBackground]?.type === "image" ? `url(${BACKGROUNDS[currentBackground].value})` : "none",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+        width: "100vw"
       }}
     >
       <div 
-        className={`rounded-xl shadow-lg p-8 w-96 h-96 text-center flex flex-col backdrop-blur-sm`} 
+        className="rounded-2xl shadow-2xl p-10 w-[450px] h-[550px] text-center flex flex-col backdrop-blur-md mx-4 border border-white/10" 
         style={{ 
           backgroundColor: THEMES[currentBackground] 
-            ? THEMES[currentBackground].timerColor 
-            : 'rgba(0, 0, 0, 0.5)'
+            ? `${THEMES[currentBackground].timerColor}CC` 
+            : 'rgba(0, 0, 0, 0.7)'
         }}
       >
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex space-x-6">
+        <div className="flex justify-between items-center mb-10">
+          <div className="flex space-x-8">
             <span 
-              className={`cursor-pointer text-l font-bold transition-colors ${mode === "work" ? "text-white" : "text-white/70 hover:text-white"}`}
+              className={`cursor-pointer text-base font-semibold transition-colors ${mode === "work" ? "text-white" : "text-white/60 hover:text-white"}`}
               onClick={() => handleModeClick("work")}
             >
               Work
             </span>
             <span 
-              className={`cursor-pointer text-l font-bold transition-colors ${mode === "short break" ? "text-white" : "text-white/70 hover:text-white"}`}
+              className={`cursor-pointer text-base font-semibold transition-colors ${mode === "short break" ? "text-white" : "text-white/60 hover:text-white"}`}
               onClick={() => handleModeClick("short break")}
             >
               Short Break
             </span>
             <span 
-              className={`cursor-pointer text-l font-bold transition-colors ${mode === "long break" ? "text-white" : "text-white/70 hover:text-white"}`}
+              className={`cursor-pointer text-base font-semibold transition-colors ${mode === "long break" ? "text-white" : "text-white/60 hover:text-white"}`}
               onClick={() => handleModeClick("long break")}
             >
               Long Break
@@ -317,7 +319,7 @@ export default function Home() {
           </div>
           <button 
             onClick={() => setShowSettings(true)}
-            className="text-white hover:text-white/80 transition-colors"
+            className="text-white/80 hover:text-white transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -326,37 +328,37 @@ export default function Home() {
           </button>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <h1 className="text-white font-bold text-7xl">{displayTime}</h1>
+          <h1 className="text-white font-bold text-9xl tracking-tighter">{displayTime}</h1>
         </div>
-        <div className="mb-2">
-          <h1 className="text-white font-bold text-2xl">
+        <div className="mb-10">
+          <h1 className="text-white font-semibold text-2xl tracking-wide">
             {mode === "short break" || mode === "long break" ? "Time to relax!" : "Time to work!"}
           </h1>
         </div>
-      </div>
-      <div className="flex space-x-4">
-        <button 
-          className={`hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold`} 
-          style={{ 
-            backgroundColor: THEMES[currentBackground] 
-              ? THEMES[currentBackground].timerColor 
-              : 'rgba(0, 0, 0, 0.5)'
-          }}
-          onClick={resetTimer}
-        >
-          Reset
-        </button>
-        <button 
-          className={`hover:bg-[#ffbc4d] transition-colors items-center text-center flex justify-center h-16 w-40 text-lg rounded-md p-4 text-white font-bold`} 
-          style={{ 
-            backgroundColor: THEMES[currentBackground] 
-              ? THEMES[currentBackground].timerColor 
-              : 'rgba(0, 0, 0, 0.5)'
-          }}
-          onClick={toggleTimer}
-        >
-          {running ? "Pause" : "Start"}
-        </button>
+        <div className="flex space-x-6 justify-center">
+          <button 
+            className={`hover:bg-white/10 transition-all items-center text-center flex justify-center h-16 w-44 text-lg rounded-xl p-4 text-white font-semibold border border-white/20`} 
+            style={{ 
+              backgroundColor: THEMES[currentBackground] 
+                ? `${THEMES[currentBackground].timerColor}99` 
+                : 'rgba(0, 0, 0, 0.5)'
+            }}
+            onClick={resetTimer}
+          >
+            Reset
+          </button>
+          <button 
+            className={`hover:bg-white/10 transition-all items-center text-center flex justify-center h-16 w-44 text-lg rounded-xl p-4 text-white font-semibold border border-white/20`} 
+            style={{ 
+              backgroundColor: THEMES[currentBackground] 
+                ? `${THEMES[currentBackground].timerColor}99` 
+                : 'rgba(0, 0, 0, 0.5)'
+            }}
+            onClick={toggleTimer}
+          >
+            {running ? "Pause" : "Start"}
+          </button>
+        </div>
       </div>
 
       {/* Settings Display */}
