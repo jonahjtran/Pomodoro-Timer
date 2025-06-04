@@ -36,7 +36,7 @@ const Focus = () => {
     };
 
     return (
-        <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+        <div className="absolute top-4 right-4 flex flex-col items-end gap-2 w-64">
             <button 
                 onClick={toggleFocusMode}
                 className={`transition-all items-center text-center flex justify-center h-12 px-6 text-base rounded-xl text-white font-semibold border backdrop-blur-md ${

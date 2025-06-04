@@ -80,6 +80,23 @@ const BACKGROUNDS = {
   },
 };
 
+const MUSIC = {
+  ocean: {
+    name: "Ocean",
+    type: "audio",
+    value: "/music/ocean.mp3"
+  },
+  rain: {
+    name: "Rain",
+    type: "audio",
+    value: "/music/rain.mp3"
+  },
+  forest: {
+    name: "Forest",
+    type: "audio",
+    value: "/music/forest.mp3"
+  },
+};
 /**
  * Home Component - A Pomodoro Timer application
  * 
@@ -161,6 +178,7 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [showTimeSettings, setShowTimeSettings] = useState(true);
   const [showBackgroundSettings, setShowBackgroundSettings] = useState(true);
+  const [showMusicSettings, setShowMusicSettings] = useState(true);
 
   const [currentTheme, setCurrentTheme] = useState("tan");
   const [currentBackground, setCurrentBackground] = useState("altgeld");
@@ -174,6 +192,12 @@ export default function Home() {
   const [settings_long_time, setSettingsLongTime] = useState(long_time);
   const [settings_short_time, setSettingsShortTime] = useState(short_time);
   const [settings_work_time, setSettingsWorkTime] = useState(work_time);
+
+  const [musicEnabled, setMusicEnabled] = useState(false);
+  const [settingsMusicType, setSettingsMusicType] = useState("ocean");
+  const [musicType, setMusicType] = useState("ocean");
+
+  const [audioElement, setAudioElement] = useState(null);
 
   useEffect(() => {
     let interval = null;
@@ -207,6 +231,54 @@ export default function Home() {
     return ()=> clearInterval(interval);
   }, [running, seconds, minutes, mode]);
 
+  useEffect(() => {
+    if (audioElement) {
+      if (musicEnabled) {
+        console.log("Attempting to play audio:", MUSIC[musicType].value);
+        audioElement.play().catch(error => {
+          console.error("Audio playback failed:", error);
+          console.error("Audio element state:", {
+            src: audioElement.src,
+            readyState: audioElement.readyState,
+            error: audioElement.error
+          });
+          setMusicEnabled(false);
+        });
+      } else {
+        audioElement.pause();
+      }
+    }
+  }, [musicEnabled, audioElement]);
+
+  useEffect(() => {
+    if (audioElement) {
+      console.log("Loading new audio source:", MUSIC[musicType].value);
+      audioElement.src = MUSIC[musicType].value;
+      audioElement.load();
+      
+      // Add event listeners for debugging
+      audioElement.addEventListener('error', (e) => {
+        console.error("Audio error:", e);
+      });
+      
+      audioElement.addEventListener('loadeddata', () => {
+        console.log("Audio loaded successfully");
+      });
+
+      if (musicEnabled) {
+        audioElement.play().catch(error => {
+          console.error("Audio playback failed:", error);
+          console.error("Audio element state:", {
+            src: audioElement.src,
+            readyState: audioElement.readyState,
+            error: audioElement.error
+          });
+          setMusicEnabled(false);
+        });
+      }
+    }
+  }, [musicType, audioElement]);
+
   // Update settings values when modal opens
   useEffect(() => {
     if (showSettings) {
@@ -215,6 +287,7 @@ export default function Home() {
       setSettingsLongTime(long_time);
       setSettingsBreakCount(break_count);
       setSettingsBackground(currentBackground);
+      setSettingsMusicType(musicType);
     }
   }, [showSettings]);
 
@@ -291,7 +364,50 @@ export default function Home() {
         width: "100vw"
       }}
     >
-      <Focus className="border-4 text-bold"></Focus>
+      <div className="absolute top-4 left-4">
+        <button
+          onClick={() => setMusicEnabled(!musicEnabled)}
+          className={`px-4 py-2 rounded-lg backdrop-blur-md border border-white/10 transition-all ${
+            musicEnabled 
+              ? 'bg-emerald-500/80 hover:bg-emerald-500' 
+              : 'bg-gray-500/80 hover:bg-gray-500'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-5 w-5 text-white" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d={musicEnabled 
+                  ? "M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.728-2.728" 
+                  : "M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.728-2.728"
+                } 
+              />
+            </svg>
+            <span className="text-white font-medium">
+              {musicEnabled ? "Music On" : "Music Off"}
+            </span>
+          </div>
+        </button>
+      </div>
+      <div className="absolute top-4 right-4">
+        <div className="relative">
+          <Focus />
+        </div>
+      </div>
+      <audio 
+        ref={setAudioElement}
+        src={MUSIC[musicType].value}
+        loop
+        className="hidden"
+      />
       <div 
         className="rounded-2xl shadow-2xl p-10 w-[450px] h-[550px] text-center flex flex-col backdrop-blur-md mx-4 border border-white/10" 
         style={{ 
@@ -530,6 +646,48 @@ export default function Home() {
                 </div>
               </div>
 
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium text-gray-300">Background Music</h3>
+                  <button 
+                    onClick={() => setShowMusicSettings(!showMusicSettings)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className={`h-5 w-5 transform transition-transform ${showMusicSettings ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+                {showMusicSettings && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(MUSIC).map(([key, music]) => (
+                      <button
+                        key={key}
+                        onClick={() => setSettingsMusicType(key)}
+                        className={`p-3 rounded-lg border-2 transition-all ${
+                          settingsMusicType === key 
+                            ? 'border-[#ffcd74] scale-105' 
+                            : 'border-transparent hover:border-gray-500'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                          </svg>
+                          <span className="text-sm font-medium text-gray-300">{music.name}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="mt-8 flex justify-end space-x-3">
                 <button
                   onClick={() => setShowSettings(false)}
@@ -553,7 +711,7 @@ export default function Home() {
                     setShortTime(newShortTime);
                     setLongTime(newLongTime);
                     setBreakCount(newBreakCount);
-                    
+                    setMusicType(settingsMusicType);
                     // Update background and theme colors when saving
                     setCurrentBackground(settingsBackground);
                     if (THEMES[settingsBackground]) {
