@@ -1,10 +1,11 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import Focus from "./Focus";
 
 const THEMES = {
-  default: {
-    name: "Default",
+  tan: {
+    name: "Tan",
     backgroundColor: "#ffedbf",
     timerColor: "#ffcd74",
     hoverColor: "#ffbc4d"
@@ -159,13 +160,13 @@ export default function Home() {
 
   const [showSettings, setShowSettings] = useState(false);
 
-  const [currentTheme, setCurrentTheme] = useState("default");
+  const [currentTheme, setCurrentTheme] = useState("tan");
   const [currentBackground, setCurrentBackground] = useState("altgeld");
   const [settingsBackground, setSettingsBackground] = useState("altgeld");
 
-  const [backgroundColor, setBackgroundColor] = useState(THEMES.default.backgroundColor);
-  const [timerColor, setTimerColor] = useState(THEMES.default.timerColor);
-  const [hoverColor, setHoverColor] = useState(THEMES.default.hoverColor);
+  const [backgroundColor, setBackgroundColor] = useState(THEMES.tan.backgroundColor);
+  const [timerColor, setTimerColor] = useState(THEMES.tan.timerColor);
+  const [hoverColor, setHoverColor] = useState(THEMES.tan.hoverColor);
 
   const [settings_break_count, setSettingsBreakCount] = useState(break_count);
   const [settings_long_time, setSettingsLongTime] = useState(long_time);
@@ -288,6 +289,7 @@ export default function Home() {
         width: "100vw"
       }}
     >
+      <Focus className="border-4 text-bold"></Focus>
       <div 
         className="rounded-2xl shadow-2xl p-10 w-[450px] h-[550px] text-center flex flex-col backdrop-blur-md mx-4 border border-white/10" 
         style={{ 
@@ -296,6 +298,7 @@ export default function Home() {
             : 'rgba(0, 0, 0, 0.7)'
         }}
       >
+
         <div className="flex justify-between items-center mb-10">
           <div className="flex space-x-8">
             <span 
