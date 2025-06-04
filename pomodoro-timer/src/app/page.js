@@ -159,6 +159,8 @@ export default function Home() {
   const [work_time, setWorkTime] = useState(25);
 
   const [showSettings, setShowSettings] = useState(false);
+  const [showTimeSettings, setShowTimeSettings] = useState(true);
+  const [showBackgroundSettings, setShowBackgroundSettings] = useState(true);
 
   const [currentTheme, setCurrentTheme] = useState("tan");
   const [currentBackground, setCurrentBackground] = useState("altgeld");
@@ -383,112 +385,148 @@ export default function Home() {
             <div className="overflow-y-auto px-8 pb-8">
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-300">Time (minutes)</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Work</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        min="5"
-                        max="60"
-                        value={settings_work_time}
-                        onChange={(e) => handleTimeChange(e.target.value, setSettingsWorkTime)}
-                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Short Break</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        min="1"
-                        max="30"
-                        value={settings_short_time}
-                        onChange={(e) => handleTimeChange(e.target.value, setSettingsShortTime)}
-                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Long Break</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        min="1"
-                        max="60"
-                        value={settings_long_time}
-                        onChange={(e) => handleTimeChange(e.target.value, setSettingsLongTime)}
-                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Work Sessions</label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        min="1"
-                        max="10"
-                        value={settings_break_count}
-                        onChange={(e) => handleTimeChange(e.target.value, setSettingsBreakCount)}
-                        className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-gray-300">Time (minutes)</h3>
+                    <button 
+                      onClick={() => setShowTimeSettings(!showTimeSettings)}
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className={`h-5 w-5 transform transition-transform ${showTimeSettings ? 'rotate-180' : ''}`} 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
                   </div>
+                  {showTimeSettings && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Work</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          min="5"
+                          max="60"
+                          value={settings_work_time}
+                          onChange={(e) => handleTimeChange(e.target.value, setSettingsWorkTime)}
+                          className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Short Break</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          min="1"
+                          max="30"
+                          value={settings_short_time}
+                          onChange={(e) => handleTimeChange(e.target.value, setSettingsShortTime)}
+                          className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Long Break</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          min="1"
+                          max="60"
+                          value={settings_long_time}
+                          onChange={(e) => handleTimeChange(e.target.value, setSettingsLongTime)}
+                          className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Work Sessions</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          min="1"
+                          max="10"
+                          value={settings_break_count}
+                          onChange={(e) => handleTimeChange(e.target.value, setSettingsBreakCount)}
+                          className="w-full bg-[#2d2d2d] border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#ffcd74] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-300">Background</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {Object.entries(THEMES).map(([key, theme]) => (
-                      <button
-                        key={key}
-                        onClick={() => handleBackgroundChange(key)}
-                        className={`p-3 rounded-lg border-2 transition-all ${
-                          settingsBackground === key 
-                            ? 'border-white scale-105' 
-                            : 'border-transparent hover:border-gray-500'
-                        }`}
-                        style={{ 
-                          backgroundColor: theme.backgroundColor,
-                          height: "100px"
-                        }}
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-gray-300">Background</h3>
+                    <button 
+                      onClick={() => setShowBackgroundSettings(!showBackgroundSettings)}
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className={`h-5 w-5 transform transition-transform ${showBackgroundSettings ? 'rotate-180' : ''}`} 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
                       >
-                        <div 
-                          className="w-full h-8 rounded"
-                          style={{ backgroundColor: theme.timerColor }}
-                        />
-                        <span className="block mt-2 text-sm font-medium text-gray-800">
-                          {theme.name}
-                        </span>
-                      </button>
-                    ))}
-                    {Object.entries(BACKGROUNDS).map(([key, bg]) => (
-                      <button
-                        key={key}
-                        onClick={() => handleBackgroundChange(key)}
-                        className={`p-3 rounded-lg border-2 transition-all ${
-                          settingsBackground === key 
-                            ? 'border-white scale-105' 
-                            : 'border-transparent hover:border-gray-500'
-                        }`}
-                        style={{ 
-                          backgroundColor: "transparent",
-                          backgroundImage: `url(${bg.value})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          height: "100px"
-                        }}
-                      >
-                        <span className="block mt-2 text-sm font-medium text-white bg-black/50 px-2 py-1 rounded">
-                          {bg.name}
-                        </span>
-                      </button>
-                    ))}
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
                   </div>
+                  {showBackgroundSettings && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {Object.entries(THEMES).map(([key, theme]) => (
+                        <button
+                          key={key}
+                          onClick={() => handleBackgroundChange(key)}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            settingsBackground === key 
+                              ? 'border-white scale-105' 
+                              : 'border-transparent hover:border-gray-500'
+                          }`}
+                          style={{ 
+                            backgroundColor: theme.backgroundColor,
+                            height: "100px"
+                          }}
+                        >
+                          <div 
+                            className="w-full h-8 rounded"
+                            style={{ backgroundColor: theme.timerColor }}
+                          />
+                          <span className="block mt-2 text-sm font-medium text-gray-800">
+                            {theme.name}
+                          </span>
+                        </button>
+                      ))}
+                      {Object.entries(BACKGROUNDS).map(([key, bg]) => (
+                        <button
+                          key={key}
+                          onClick={() => handleBackgroundChange(key)}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            settingsBackground === key 
+                              ? 'border-white scale-105' 
+                              : 'border-transparent hover:border-gray-500'
+                          }`}
+                          style={{ 
+                            backgroundColor: "transparent",
+                            backgroundImage: `url(${bg.value})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            height: "100px"
+                          }}
+                        >
+                          <span className="block mt-2 text-sm font-medium text-white bg-black/50 px-2 py-1 rounded">
+                            {bg.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
