@@ -2,6 +2,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Focus from "./Focus";
+import PlannerSidebar from "./Planner"
 
 const THEMES = {
   tan: {
@@ -212,7 +213,7 @@ export default function Home() {
             setRunning(false);
             setSeconds(0);
             if (mode == "work") { // just finished work, move to break
-              setCount(count + 1);
+                setCount(count + 1);
               if (count % break_count == 0) {
                 setCount(0);
                 setMode("long break");
@@ -364,6 +365,8 @@ export default function Home() {
         width: "100vw"
       }}
     >
+            
+      <PlannerSidebar />
       <div className="absolute top-4 left-4">
         <button
           onClick={() => setMusicEnabled(!musicEnabled)}
